@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuantumMolecule Nexus</title>
+  <style>
+    :root {
+      --bg: #06111f;
+      --bg2: #0c1e34;
+      --panel: rgba(11, 27, 46, .55);
+      --panel-strong: rgba(14, 33, 56, .84);
+      --line: rgba(88, 237, 255, .26);
+      --text: #ecf8ff;
+      --muted: #92aed0;
+      --cyan: #66f7ff;
+      --purple: #b06dff;
+      --green: #6cff95;
+      --pink: #ff75d8;
+      --warning: #f8ff8a;
+      --shadow: 0 0 30px rgba(102, 247, 255, .16), 0 0 80px rgba(176, 109, 255, .12);
+      --glass: blur(20px);
+      --radius: 22px;
+      --speed: 1;
+      --cursor-x: 50vw;
+      --cursor-y: 50vh;
+    }
+
+    body.light {
+      --bg: #e9f5ff;
+      --bg2: #cbdef6;
+      --panel: rgba(255, 255, 255, .62);
+      --panel-strong: rgba(244, 250, 255, .88);
+      --line: rgba(24, 160, 222, .22);
+      --text: #0b1730;
+      --muted: #5d6f8d;
+      --cyan: #008db1;
+      --purple: #7f48f4;
+      --green: #1fbb60;
+      --pink: #e84db3;
+      --warning: #a08e00;
+      --shadow: 0 14px 35px rgba(44, 115, 163, .13), 0 0 55px rgba(127, 72, 244, .10);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: Segoe UI, system-ui, sans-serif;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg));
+      color: var(--text);
+      overflow: hidden
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at var(--cursor-x) var(--cursor-y), rgba(102, 247, 255, .18), transparent 18%),
+        linear-gradient(115deg, rgba(176, 109, 255, .06), transparent 40%, rgba(108, 255, 149, .06));
+      pointer-events: none;
+      z-index: 0;
+      transition: .12s linear;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -30%;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 44px, rgba(102, 247, 255, .03) 44px 45px),
+        repeating-linear-gradient(0deg, transparent 0 44px, rgba(176, 109, 255, .03) 44px 45px);
+      transform: rotate(8deg);
+      animation: gridDrift 18s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes gridDrift {
+      to {
+        transform: rotate(8deg) translateY(40px)
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-10px)
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(102, 247, 255, .28)
+      }
+
+      50% {
+        box-shadow: 0 0 0 14px rgba(102, 247, 255, 0)
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes spinReverse {
+      to {
+        transform: rotate(-360deg)
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0 0
+      }
+
+      100% {
+        background-position: 200% 0
+      }
+    }
+
+    @keyframes glowWave {
+
+      0%,
+      100% {
+        opacity: .35;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .8;
+        transform: scale(1.06)
+      }
+    }
+
+    @keyframes typingCaret {
+      50% {
+        border-color: transparent
+      }
+    }
+
+    @keyframes intro {
+      from {
+        opacity: 0;
+        transform: translateY(22px) scale(.98)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes orbitBob {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-12px)
+      }
+    }
+
+    @keyframes waveform {
+      0% {
+        background-position: 0 0
+      }
+
+      100% {
+        background-position: 240px 0
+      }
+    }
+
+    @keyframes scan {
+      0% {
+        transform: translateY(-120%)
+      }
+
+      100% {
+        transform: translateY(420%)
+      }
+    }
+
+    @keyframes bubbleRise {
+      0% {
+        transform: translateY(0) scale(.8);
+        opacity: 0
+      }
+
+      10%,
+      85% {
+        opacity: .55
+      }
+
+      100% {
+        transform: translateY(-120vh) scale(1.2);
+        opacity: 0
+      }
+    }
+
+    @keyframes symbolFloat {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0)
+      }
+
+      50% {
+        transform: translateY(-14px) rotate(10deg)
+      }
+    }
+
+    @keyframes trailFade {
+      to {
+        opacity: 0;
+        transform: scale(.3)
+      }
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 16px;
+      display: grid;
+      grid-template-rows: 82px 1fr 240px;
+      gap: 14px;
+      animation: intro .9s ease both;
+    }
+
+    .glass {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(255, 255, 255, .08), transparent 25%, transparent 70%, rgba(102, 247, 255, .08));
+      pointer-events: none;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .navbar::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple), var(--green), var(--cyan));
+      background-size: 200% 100%;
+      animation: shimmer 6s linear infinite;
+      filter: drop-shadow(0 0 8px var(--cyan));
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      position: relative;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .5), transparent 28%), linear-gradient(135deg, var(--cyan), var(--purple));
+      box-shadow: 0 0 24px rgba(102, 247, 255, .35);
+    }
+
+    .logo::before,
+    .logo::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(255, 255, 255, .45);
+      border-radius: 50%;
+      animation: spin 10s linear infinite;
+    }
+
+    .logo::after {
+      inset: 14px;
+      animation-direction: reverse;
+      animation-duration: 7s
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.45rem;
+      letter-spacing: .05em
+    }
+
+    .typing {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid var(--cyan);
+      width: 0;
+      animation: reveal 5s steps(28, end) forwards, typingCaret .8s step-end infinite;
+    }
+
+    @keyframes reveal {
+      to {
+        width: 100%
+      }
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .85rem
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end
+    }
+
+    .chip,
+    .icon-btn,
+    .metric-pill,
+    .badge,
+    .tab {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .04);
+      color: var(--text)
+    }
+
+    .icon-btn,
+    .chip {
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: .25s ease;
+      backdrop-filter: blur(10px)
+    }
+
+    .icon-btn:hover,
+    .chip:hover,
+    .tab:hover,
+    .control-btn:hover,
+    .cell-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(102, 247, 255, .22)
+    }
+
+    .metric-pill {
+      padding: 10px 14px;
+      border-radius: 14px;
+      min-width: 92px;
+      text-align: center
+    }
+
+    .clock {
+      font-weight: 700;
+      color: var(--cyan)
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--green));
+      display: grid;
+      place-items: center;
+      font-weight: 700
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 340px 1fr 360px;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .sidebar,
+    .reactor-wrap,
+    .analysis {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px
+    }
+
+    .panel-title h2 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: .08em;
+      text-transform: uppercase
+    }
+
+    .panel-title small {
+      color: var(--muted)
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 14px
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 13px 42px 13px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(102, 247, 255, .45);
+      background: rgba(8, 20, 35, .55);
+      color: var(--text);
+      outline: none;
+      box-shadow: 0 0 18px rgba(102, 247, 255, .12) inset;
+    }
+
+    body.light .search-wrap input {
+      background: rgba(255, 255, 255, .72)
+    }
+
+    .search-wrap span {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--cyan)
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .chip.active {
+      background: linear-gradient(135deg, rgba(102, 247, 255, .16), rgba(176, 109, 255, .16));
+      box-shadow: 0 0 0 1px rgba(102, 247, 255, .4), 0 0 20px rgba(102, 247, 255, .18)
+    }
+
+    .cell-list {
+      overflow: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0
+    }
+
+    .cell-list::-webkit-scrollbar,
+    .tab-content::-webkit-scrollbar,
+    .analysis-scroll::-webkit-scrollbar {
+      width: 10px
+    }
+
+    .cell-list::-webkit-scrollbar-thumb,
+    .tab-content::-webkit-scrollbar-thumb,
+    .analysis-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--cyan), var(--purple));
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box
+    }
+
+    .cell-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 1fr 12px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(102, 247, 255, .12);
+      cursor: pointer;
+      transition: .25s ease;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .03)
+    }
+
+    .cell-card.active {
+      border-color: rgba(102, 247, 255, .58);
+      box-shadow: 0 0 0 1px rgba(102, 247, 255, .38), 0 0 22px rgba(102, 247, 255, .22)
+    }
+
+    .cell-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .25), transparent 28%), linear-gradient(135deg, rgba(102, 247, 255, .18), rgba(176, 109, 255, .18));
+      font-size: 1.35rem;
+      animation: float 4s ease-in-out infinite;
+      position: relative
+    }
+
+    .cell-icon::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px dashed rgba(102, 247, 255, .34);
+      border-radius: 50%;
+      animation: spin 9s linear infinite
+    }
+
+    .cell-name {
+      font-weight: 700
+    }
+
+    .cell-sub {
+      color: var(--muted);
+      font-size: .83rem;
+      margin-top: 3px
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+      animation: pulse 2s infinite
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      background: rgba(255, 255, 255, .26);
+      animation: ripple .6s linear;
+      pointer-events: none
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(5);
+        opacity: 0
+      }
+    }
+
+    .reactor-wrap {
+      padding: 16px 16px 14px;
+      overflow: hidden
+    }
+
+    .reactor-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap
+    }
+
+    .control-row,
+    .utility-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .control-btn {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .05);
+      cursor: pointer;
+      color: var(--text);
+      transition: .25s ease
+    }
+
+    .speed-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted)
+    }
+
+    .speed-box input {
+      accent-color: var(--cyan)
+    }
+
+    .reactor-stage {
+      position: relative;
+      flex: 1;
+      border-radius: 26px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(176, 109, 255, .14), transparent 30%),
+        radial-gradient(circle at 22% 20%, rgba(102, 247, 255, .12), transparent 25%),
+        linear-gradient(180deg, rgba(8, 21, 37, .88), rgba(5, 15, 28, .94));
+      border: 1px solid rgba(255, 255, 255, .06);
+      min-height: 380px;
+      transform-style: preserve-3d;
+    }
+
+    body.light .reactor-stage {
+      background: linear-gradient(180deg, rgba(239, 247, 255, .85), rgba(214, 230, 247, .94))
+    }
+
+    .wave-bg,
+    .lab-fog,
+    .scanline,
+    .molecule-layer,
+    .cursor-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none
+    }
+
+    .wave-bg {
+      background:
+        linear-gradient(transparent 45%, rgba(102, 247, 255, .08) 50%, transparent 55%),
+        linear-gradient(90deg, transparent 20%, rgba(176, 109, 255, .06) 50%, transparent 80%);
+      background-size: 240px 110px, 180px 100%;
+      animation: waveform 8s linear infinite;
+      opacity: .55
+    }
+
+    .lab-fog {
+      background:
+        radial-gradient(circle at 30% 20%, rgba(102, 247, 255, .10), transparent 30%),
+        radial-gradient(circle at 70% 60%, rgba(176, 109, 255, .08), transparent 28%),
+        radial-gradient(circle at 50% 85%, rgba(108, 255, 149, .08), transparent 26%);
+      filter: blur(14px);
+      animation: float 10s ease-in-out infinite
+    }
+
+    .scanline::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 28%;
+      background: linear-gradient(180deg, transparent, rgba(102, 247, 255, .15), transparent);
+      animation: scan 5s linear infinite
+    }
+
+    .molecule-core {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 220px;
+      height: 220px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      transform-style: preserve-3d;
+      transition: transform .25s ease;
+    }
+
+    .ring,
+    .orbit,
+    .pulse-ring,
+    .dna,
+    .nucleus,
+    .symbol,
+    .bubble {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-style: preserve-3d
+    }
+
+    .ring {
+      border: 2px solid rgba(102, 247, 255, .34);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px rgba(102, 247, 255, .18), inset 0 0 16px rgba(102, 247, 255, .08)
+    }
+
+    .ring.r1 {
+      width: 180px;
+      height: 180px;
+      animation: spin calc(12s / var(--speed)) linear infinite
+    }
+
+    .ring.r2 {
+      width: 250px;
+      height: 140px;
+      border-color: rgba(176, 109, 255, .34);
+      transform: translate(-50%, -50%) rotateX(68deg);
+      animation: spinReverse calc(14s / var(--speed)) linear infinite
+    }
+
+    .ring.r3 {
+      width: 145px;
+      height: 260px;
+      border-color: rgba(108, 255, 149, .28);
+      transform: translate(-50%, -50%) rotateY(72deg);
+      animation: spin calc(10s / var(--speed)) linear infinite
+    }
+
+    .orbit {
+      width: 16px;
+      height: 16px;
+      margin: -8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--warning), var(--cyan));
+      box-shadow: 0 0 14px var(--cyan)
+    }
+
+    .orbit.o1 {
+      animation: orbit1 calc(6s / var(--speed)) linear infinite
+    }
+
+    .orbit.o2 {
+      animation: orbit2 calc(8s / var(--speed)) linear infinite;
+      background: radial-gradient(circle, #fff, var(--purple))
+    }
+
+    .orbit.o3 {
+      animation: orbit3 calc(9s / var(--speed)) linear infinite;
+      background: radial-gradient(circle, #fff, var(--green))
+    }
+
+    @keyframes orbit1 {
+      from {
+        transform: translate(-50%, -50%) rotate(0) translateX(95px)
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg) translateX(95px)
+      }
+    }
+
+    @keyframes orbit2 {
+      from {
+        transform: translate(-50%, -50%) rotate(0) translateX(125px) rotateY(60deg)
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(-360deg) translateX(125px) rotateY(60deg)
+      }
+    }
+
+    @keyframes orbit3 {
+      from {
+        transform: translate(-50%, -50%) rotate(0) translateY(80px)
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg) translateY(80px)
+      }
+    }
+
+    .pulse-ring {
+      width: 120px;
+      height: 120px;
+      border: 1px solid rgba(255, 255, 255, .28);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: glowWave calc(3s / var(--speed)) ease-in-out infinite
+    }
+
+    .pulse-ring:nth-child(2) {
+      animation-delay: -1s
+    }
+
+    .pulse-ring:nth-child(3) {
+      animation-delay: -2s
+    }
+
+    .nucleus {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255, 255, 255, .9), rgba(102, 247, 255, .42) 20%, rgba(176, 109, 255, .62) 48%, rgba(5, 15, 28, .1) 72%),
+        radial-gradient(circle, rgba(102, 247, 255, .25), transparent 70%);
+      box-shadow: 0 0 30px rgba(102, 247, 255, .42), 0 0 70px rgba(176, 109, 255, .3);
+    }
+
+    .nucleus::before,
+    .nucleus::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, .34);
+      animation: spin 6s linear infinite
+    }
+
+    .nucleus::after {
+      inset: 28px;
+      animation-direction: reverse
+    }
+
+    .dna {
+      width: 150px;
+      height: 260px;
+      transform: translate(-50%, -50%);
+      opacity: .7;
+      animation: orbitBob 6s ease-in-out infinite
+    }
+
+    .dna::before,
+    .dna::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 10px, var(--cyan) 0 4px, transparent 5px),
+        radial-gradient(circle at 50% 30px, var(--purple) 0 4px, transparent 5px),
+        linear-gradient(90deg, transparent 30%, rgba(102, 247, 255, .4) 30% 34%, transparent 34% 66%, rgba(176, 109, 255, .4) 66% 70%, transparent 70%);
+      background-size: 100% 38px;
+      border-radius: 40%;
+      filter: drop-shadow(0 0 8px rgba(102, 247, 255, .4));
+    }
+
+    .dna::before {
+      transform: rotate(28deg)
+    }
+
+    .dna::after {
+      transform: rotate(-28deg)
+    }
+
+    .reactor-meta {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px
+    }
+
+    .meta-card {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .08em
+    }
+
+    .meta-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 6px
+    }
+
+    .analysis {
+      padding-right: 10px
+    }
+
+    .analysis-scroll {
+      overflow: auto;
+      min-height: 0;
+      padding-right: 8px
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px
+    }
+
+    .hero-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .07)
+    }
+
+    .hero-card h3,
+    .analysis-head h3 {
+      margin: 0
+    }
+
+    .analysis-head {
+      margin-bottom: 14px
+    }
+
+    .analysis-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45
+    }
+
+    .progress-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .progress-item {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: .9rem
+    }
+
+    .progress-track {
+      margin-top: 8px;
+      height: 10px;
+      background: rgba(255, 255, 255, .08);
+      border-radius: 999px;
+      overflow: hidden
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple), var(--green));
+      box-shadow: 0 0 16px rgba(102, 247, 255, .32);
+      transition: width .8s cubic-bezier(.2, .8, .2, 1)
+    }
+
+    .radials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0
+    }
+
+    .radial {
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      text-align: center
+    }
+
+    .radial-ring {
+      --deg: 180deg;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      background: conic-gradient(var(--cyan) var(--deg), rgba(255, 255, 255, .08) 0);
+      display: grid;
+      place-items: center;
+      position: relative
+    }
+
+    .radial-ring::before {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border-radius: 50%;
+      background: var(--panel-strong);
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .radial-ring strong {
+      position: relative;
+      z-index: 1
+    }
+
+    .mini-graphs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .graph-card {
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .spark {
+      height: 72px;
+      width: 100%
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px
+    }
+
+    .badge {
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: .8rem;
+      background: linear-gradient(135deg, rgba(102, 247, 255, .14), rgba(176, 109, 255, .14))
+    }
+
+    .pulse-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .pulse-indicator i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 1.8s infinite
+    }
+
+    .bottom {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      padding-bottom: 10px
+    }
+
+    .tab {
+      padding: 11px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: .25s ease;
+      background: rgba(255, 255, 255, .04)
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, rgba(102, 247, 255, .16), rgba(176, 109, 255, .16));
+      box-shadow: 0 0 0 1px rgba(102, 247, 255, .34), 0 0 18px rgba(176, 109, 255, .15)
+    }
+
+    .tab-content {
+      margin-top: 10px;
+      overflow: auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      min-height: 0
+    }
+
+    .info-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      min-height: 128px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .info-card h4 {
+      margin: 0 0 8px
+    }
+
+    .info-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: .9rem
+    }
+
+    .diagram {
+      margin-top: 12px;
+      height: 42px;
+      border-radius: 12px;
+      background:
+        linear-gradient(90deg, rgba(102, 247, 255, .18), rgba(176, 109, 255, .18)),
+        repeating-linear-gradient(90deg, transparent 0 10px, rgba(255, 255, 255, .07) 10px 12px);
+      position: relative;
+      overflow: hidden
+    }
+
+    .diagram::after {
+      content: "";
+      position: absolute;
+      left: -30%;
+      top: 0;
+      bottom: 0;
+      width: 30%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .34), transparent);
+      animation: shimmer 3s linear infinite
+    }
+
+    .facts,
+    .assistant-btn,
+    .toast-wrap,
+    .loader,
+    .metrics-cluster,
+    .sound-indicator,
+    .cursor,
+    .tooltip,
+    .fact-floating,
+    .notification-badge {
+      position: fixed;
+      z-index: 20
+    }
+
+    .assistant-btn,
+    .sound-indicator {
+      right: 22px;
+      border: none;
+      border-radius: 50%;
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #04101c;
+      box-shadow: 0 0 24px rgba(102, 247, 255, .35)
+    }
+
+    .assistant-btn {
+      bottom: 26px;
+      font-size: 1.3rem
+    }
+
+    .sound-indicator {
+      bottom: 94px
+    }
+
+    .tooltip {
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(6, 17, 31, .88);
+      border: 1px solid rgba(102, 247, 255, .34);
+      color: #eafcff;
+      font-size: .8rem;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -12px);
+      transition: .18s ease
+    }
+
+    .tooltip.show {
+      opacity: 1
+    }
+
+    .toast-wrap {
+      top: 104px;
+      right: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .toast {
+      min-width: 220px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(6, 17, 31, .88);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      animation: intro .35s ease both
+    }
+
+    .toast b {
+      display: block;
+      margin-bottom: 4px
+    }
+
+    .loader {
+      inset: 0;
+      background: radial-gradient(circle at top, #102340, #030812);
+      display: grid;
+      place-items: center;
+      transition: .6s ease
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden
+    }
+
+    .loader-inner {
+      text-align: center
+    }
+
+    .loader-core {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      position: relative;
+      background: radial-gradient(circle, var(--cyan), rgba(176, 109, 255, .3), transparent 72%);
+      box-shadow: 0 0 40px rgba(102, 247, 255, .4)
+    }
+
+    .loader-core::before,
+    .loader-core::after {
+      content: "";
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 2px solid rgba(102, 247, 255, .25);
+      animation: spin 2.2s linear infinite
+    }
+
+    .loader-core::after {
+      inset: 14px;
+      border-color: rgba(176, 109, 255, .32);
+      animation-direction: reverse;
+      animation-duration: 1.7s
+    }
+
+    .loader p {
+      color: #b9d8f3;
+      letter-spacing: .12em;
+      text-transform: uppercase
+    }
+
+    .facts {
+      left: 18px;
+      bottom: 20px;
+      max-width: 340px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(6, 17, 31, .82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow)
+    }
+
+    .facts h4 {
+      margin: 0 0 8px
+    }
+
+    .facts p {
+      margin: 0;
+      color: #d2e3f6;
+      line-height: 1.45;
+      font-size: .9rem
+    }
+
+    .metrics-cluster {
+      top: 100px;
+      left: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      max-width: 420px
+    }
+
+    .fact-floating {
+      left: 50%;
+      top: 14%;
+      transform: translateX(-50%);
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(6, 17, 31, .82);
+      border: 1px solid rgba(102, 247, 255, .3);
+      display: none
+    }
+
+    .molecule-layer span,
+    .chem-symbols span,
+    .bubble-layer span {
+      position: absolute;
+      display: block;
+      pointer-events: none
+    }
+
+    .chem-symbols span {
+      color: rgba(255, 255, 255, .17);
+      font-weight: 700;
+      font-size: clamp(18px, 2vw, 30px);
+      animation: symbolFloat 6s ease-in-out infinite
+    }
+
+    .bubble-layer span {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(102, 247, 255, .25);
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, .08), 0 0 20px rgba(102, 247, 255, .14);
+      animation: bubbleRise linear infinite
+    }
+
+    .cursor {
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(102, 247, 255, .62);
+      border-radius: 50%;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      mix-blend-mode: screen;
+      box-shadow: 0 0 18px rgba(102, 247, 255, .35)
+    }
+
+    .cursor::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: rgba(102, 247, 255, .28)
+    }
+
+    .trail {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(102, 247, 255, .7), rgba(176, 109, 255, .1));
+      pointer-events: none;
+      z-index: 19;
+      animation: trailFade .6s linear forwards
+    }
+
+    .chatbot {
+      position: fixed;
+      right: 26px;
+      bottom: 162px;
+      width: 290px;
+      max-width: calc(100vw - 30px);
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(6, 17, 31, .9);
+      border: 1px solid rgba(102, 247, 255, .28);
+      box-shadow: var(--shadow);
+      z-index: 21;
+      display: none
+    }
+
+    .chatbot.open {
+      display: block;
+      animation: intro .25s ease
+    }
+
+    .chatbot h4 {
+      margin: 0 0 8px
+    }
+
+    .chatbot p {
+      margin: 0 0 10px;
+      color: #c8def4;
+      font-size: .9rem;
+      line-height: 1.45
+    }
+
+    .chatbot .responses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .chatbot .responses button {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor: pointer
+    }
+
+    .fullscreen {
+      position: fixed !important;
+      inset: 10px;
+      z-index: 25
+    }
+
+    @media (max-width: 1240px) {
+      .main {
+        grid-template-columns: 300px 1fr
+      }
+
+      .analysis {
+        grid-column: 1/-1
+      }
+
+      .tab-content {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .reactor-meta {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-rows: 120px 1fr 320px;
+        padding: 10px
+      }
+
+      .main {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar,
+      .reactor-wrap,
+      .analysis {
+        min-height: 320px
+      }
+
+      .navbar {
+        align-items: flex-start
+      }
+
+      .nav-actions {
+        justify-content: flex-start
+      }
+
+      .tab-content {
+        grid-template-columns: 1fr
+      }
+
+      .radials {
+        grid-template-columns: 1fr
+      }
+
+      .hero-metrics,
+      .mini-graphs,
+      .reactor-meta {
+        grid-template-columns: 1fr
+      }
+
+      .metrics-cluster {
+        position: static;
+        margin: 0 0 10px
+      }
+
+      .facts {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-width: none
+      }
+
+      .assistant-btn,
+      .sound-indicator {
+        right: 16px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="loader" id="loader">
+    <div class="loader-inner">
+      <div class="loader-core"></div>
+      <p>Initializing QuantumMolecule Nexus</p>
+    </div>
+  </div>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="tooltip" id="tooltip"></div>
+  <div class="toast-wrap" id="toasts"></div>
+  <div class="metrics-cluster" id="systemMetrics"></div>
+  <div class="fact-floating" id="floatingFact"></div>
+
+  <div class="app" id="app">
+    <header class="glass navbar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1><span class="typing">QuantumMolecule Nexus</span></h1>
+          <div class="subtitle">Futuristic cellular chemistry operating system</div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div class="metric-pill" data-tip="Real-time laboratory clock">
+          <div class="meta-label">Time</div>
+          <div class="clock" id="clock">--:--:--</div>
+        </div>
+        <button class="icon-btn" id="themeToggle" data-tip="Switch dark/light futuristic theme">Theme</button>
+        <button class="icon-btn" id="soundToggle" data-tip="Toggle audio-reactive status cues">Sound</button>
+        <button class="icon-btn" id="screenshotBtn" data-tip="Capture dashboard screenshot">Snapshot</button>
+        <button class="icon-btn" id="exportBtn" data-tip="Export the selected cell dataset">Export</button>
+        <button class="icon-btn" id="dashboardFs" data-tip="Expand the complete dashboard">Fullscreen</button>
+        <button class="icon-btn" id="notifyBtn" data-tip="Open notifications">◎ <span class="notification-badge"
+            style="position:static">3</span></button>
+        <div class="avatar" data-tip="Lead researcher profile">QN</div>
+      </div>
+    </header>
+
+    <section class="main">
+      <aside class="glass sidebar">
+        <div class="panel-title">
+          <h2>Chemical Cell Library</h2>
+          <small id="cellCount">25 cells</small>
+        </div>
+        <div class="search-wrap">
+          <input id="searchInput" type="text" placeholder="Search cellular signatures..." />
+          <span>⌕</span>
+        </div>
+        <div class="filters" id="filters"></div>
+        <div class="cell-list" id="cellList"></div>
+      </aside>
+
+      <main class="glass reactor-wrap">
+        <div class="panel-title">
+          <h2>3D Molecular Cell Reactor</h2>
+          <small class="pulse-indicator"><i></i><span id="scanLabel">Live scan active</span></small>
+        </div>
+        <div class="reactor-toolbar">
+          <div class="control-row">
+            <button class="control-btn" id="rotateLeft">Rotate Left</button>
+            <button class="control-btn" id="rotateRight">Rotate Right</button>
+            <button class="control-btn" id="zoomIn">Zoom In</button>
+            <button class="control-btn" id="zoomOut">Zoom Out</button>
+            <button class="control-btn" id="pauseAnim">Pause</button>
+            <button class="control-btn" id="resetView">Reset</button>
+            <button class="control-btn" id="reactorFs">Fullscreen</button>
+          </div>
+          <div class="utility-row">
+            <div class="speed-box">
+              <span>Animation Speed</span>
+              <input id="speedSlider" type="range" min="0.4" max="2.6" step="0.1" value="1" />
+              <strong id="speedValue">1.0x</strong>
+            </div>
+          </div>
+        </div>
+        <div class="reactor-stage" id="reactorStage">
+          <div class="wave-bg"></div>
+          <div class="lab-fog"></div>
+          <div class="scanline"></div>
+          <div class="chem-symbols" id="chemSymbols"></div>
+          <div class="bubble-layer" id="bubbleLayer"></div>
+          <div class="molecule-core" id="moleculeCore">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring"></div>
+            <div class="dna"></div>
+            <div class="nucleus"></div>
+            <div class="orbit o1"></div>
+            <div class="orbit o2"></div>
+            <div class="orbit o3"></div>
+          </div>
+          <div class="reactor-meta">
+            <div class="meta-card">
+              <div class="meta-label">Selected Cell</div>
+              <div class="meta-value" id="metaCell">Neuron</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-label">Chemical Activity</div>
+              <div class="meta-value" id="metaChem">91%</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-label">Stability Index</div>
+              <div class="meta-value" id="metaStability">88%</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-label">Research Mode</div>
+              <div class="meta-value" id="metaMode">Quantum Scan</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="glass analysis">
+        <div class="panel-title">
+          <h2>Bio-Chemical Analysis Panel</h2>
+          <small id="healthBadge">Health 96%</small>
+        </div>
+        <div class="analysis-scroll">
+          <div class="analysis-head">
+            <h3 id="cellTitle">Neuron</h3>
+            <p id="cellSummary">Electrochemical signaling specialist with neurotransmitter release and long-range
+              membrane polarization.</p>
+          </div>
+          <div class="hero-metrics">
+            <div class="hero-card">
+              <div class="meta-label">Classification</div>
+              <h3 id="classification">Neural Cell</h3>
+            </div>
+            <div class="hero-card">
+              <div class="meta-label">Size</div>
+              <h3 id="cellSize">4-100 um soma</h3>
+            </div>
+          </div>
+          <div class="progress-group" id="progressGroup"></div>
+          <div class="radials" id="radials"></div>
+          <div class="mini-graphs">
+            <div class="graph-card">
+              <div class="meta-label">Ion Flux Graph</div>
+              <svg class="spark" id="sparkOne" viewBox="0 0 180 72"></svg>
+            </div>
+            <div class="graph-card">
+              <div class="meta-label">Protein Output</div>
+              <svg class="spark" id="sparkTwo" viewBox="0 0 180 72"></svg>
+            </div>
+          </div>
+          <div class="status-row" id="statusBadges"></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="glass bottom">
+      <div class="panel-title">
+        <h2>Molecular Research Tabs</h2>
+        <small id="factLabel">Chemistry fact ready</small>
+      </div>
+      <div class="tab-bar" id="tabBar"></div>
+      <div class="tab-content" id="tabContent"></div>
+    </section>
+  </div>
+
+  <div class="chatbot" id="chatbot">
+    <h4>AI Lab Assistant</h4>
+    <p id="assistantText">Quantum scan complete. I can highlight membrane stability, energy hotspots, or export the
+      current cell dossier.</p>
+    <div class="responses">
+      <button data-assist="Summarize energy profile">Energy profile</button>
+      <button data-assist="Explain DNA integrity">DNA integrity</button>
+      <button data-assist="Compare with another cell">Compare cells</button>
+    </div>
+  </div>
+  <button class="sound-indicator" id="factBtn" title="Random chemistry fact">?</button>
+  <button class="assistant-btn" id="assistantBtn" title="AI assistant">AI</button>
+
+  <div class="facts" id="factBox">
+    <h4>Random Chemistry Fact</h4>
+    <p id="factText">ATP hydrolysis powers many cellular reactions by coupling favorable and unfavorable energy
+      transfers.</p>
+  </div>
+
+  <script>
+    const cells = [
+      { name: "Neuron", category: "Neural Cells", icon: "⚛", subtitle: "Electrochemical signaling unit", classification: "Excitable eukaryotic neural cell", function: "Transmits action potentials and coordinates neurotransmitter-based communication.", size: "4-100 um soma", energy: 91, chem: 93, membrane: 87, dna: 95, protein: 82, health: 96, status: "Synaptic high", summary: "Electrochemical signaling specialist with neurotransmitter release and long-range membrane polarization.", tabs: { Overview: ["Axonal transmission supports rapid circuit signaling.", "Mitochondrial demand spikes at synapses during repetitive firing.", "Ion channel density creates high electrochemical responsiveness."], Nucleus: ["Chromatin programs neurotransmitter identity.", "Nuclear pores regulate messenger RNA export for synaptic proteins."], Cytoplasm: ["Microtubules shuttle vesicles along axons.", "Calcium-buffering proteins stabilize firing bursts."], Membrane: ["Voltage-gated sodium and potassium channels dominate.", "Lipid rafts organize receptor-rich domains."], Organelles: ["Rough ER and Golgi support receptor packaging.", "Synaptic vesicles cycle rapidly near presynaptic terminals."], DNA: ["Activity-dependent genes reinforce plasticity.", "Repair systems protect long-lived neuronal genomes."], Proteins: ["SNARE proteins drive vesicle fusion.", "Ion pump abundance sustains resting potential."], "Chemical Reactions": ["Neurotransmitter synthesis couples amino acid chemistry with vesicle loading.", "ATP-driven pumps restore ion gradients after depolarization."] } },
+      { name: "Astrocyte", category: "Neural Cells", icon: "✦", subtitle: "Metabolic neural support cell", classification: "Glial support cell", function: "Buffers ions, recycles neurotransmitters, and supports blood-brain barrier homeostasis.", size: "10-20 um", energy: 84, chem: 80, membrane: 88, dna: 94, protein: 76, health: 92, status: "Buffering", summary: "Star-shaped glial coordinator managing synaptic chemistry and extracellular equilibrium.", tabs: { Overview: ["Supports neuronal fuel exchange and glutamate recycling.", "Shapes synaptic microenvironments with calcium waves.", "Extends end-feet to vascular surfaces."], Nucleus: ["Gene programs adapt to inflammation and repair."], Cytoplasm: ["Glycogen stores provide local energy reserve."], Membrane: ["Aquaporins and transporters regulate fluid balance."], Organelles: ["End-feet are rich in metabolic enzymes."], DNA: ["Reactive oxygen defense protects genomic stability."], Proteins: ["Transporters clear glutamate to prevent excitotoxicity."], "Chemical Reactions": ["Lactate shuttling fuels neurons during intense firing.", "Ammonia detoxification protects neural tissue chemistry."] } },
+      { name: "Oligodendrocyte", category: "Neural Cells", icon: "⬡", subtitle: "Myelin sheath architect", classification: "Central nervous system glial cell", function: "Produces myelin wraps that accelerate electrical conduction.", size: "15-30 um", energy: 78, chem: 74, membrane: 90, dna: 92, protein: 79, health: 89, status: "Insulating", summary: "Lipid-rich myelin producer optimizing conduction velocity and axonal efficiency.", tabs: { Overview: ["Wraps multiple axons with myelin membranes.", "High lipid synthesis defines cellular chemistry.", "Supports impulse speed and axon maintenance."], Nucleus: ["Differentiation genes control maturation timing."], Cytoplasm: ["Compact cytoplasm channels membrane assembly."], Membrane: ["Myelin basic protein stabilizes membrane layers."], Organelles: ["Golgi activity supports extensive membrane export."], DNA: ["Epigenetic cues refine lineage commitment."], Proteins: ["Myelin proteins maintain sheath compaction."], "Chemical Reactions": ["Cholesterol synthesis is essential for insulation.", "Redox systems protect polyunsaturated membrane lipids."] } },
+      { name: "Microglia", category: "Immune Cells", icon: "✹", subtitle: "Neuro-immune sentinel", classification: "Resident CNS macrophage-like cell", function: "Scans neural tissue, clears debris, and orchestrates inflammatory signaling.", size: "7-15 um", energy: 76, chem: 81, membrane: 82, dna: 91, protein: 74, health: 88, status: "Patrolling", summary: "Highly motile immune guardian balancing surveillance, pruning, and inflammatory chemistry.", tabs: { Overview: ["Constantly surveys neural microenvironments.", "Shifts rapidly between resting and activated states.", "Phagocytosis depends on lysosomal chemistry."], Nucleus: ["Immune-response genes activate under injury."], Cytoplasm: ["Dynamic actin supports rapid branching changes."], Membrane: ["Pattern-recognition receptors detect danger signals."], Organelles: ["Lysosomes are prominent during active clearance."], DNA: ["Inflammation can transiently alter transcriptional programs."], Proteins: ["Cytokine synthesis modulates neighborhood signaling."], "Chemical Reactions": ["ROS bursts support pathogen killing.", "Lysosomal acidification drives macromolecule degradation."] } },
+      { name: "Photoreceptor", category: "Neural Cells", icon: "◉", subtitle: "Light transduction specialist", classification: "Retinal sensory neuron", function: "Converts photons into electrochemical signals through opsin-driven cascades.", size: "20-50 um", energy: 86, chem: 89, membrane: 84, dna: 93, protein: 80, health: 90, status: "Optic charge", summary: "Photon-sensitive neural detector using cyclic nucleotide chemistry for sensory conversion.", tabs: { Overview: ["Rods and cones convert light into membrane potential changes.", "Outer segments are dense with visual pigments.", "Energy demand rises in dark current maintenance."], Nucleus: ["Differential opsin expression defines spectral tuning."], Cytoplasm: ["Disc renewal requires constant trafficking."], Membrane: ["Cyclic GMP-gated channels regulate photoresponses."], Organelles: ["Mitochondria cluster in inner segments."], DNA: ["Retinal gene expression supports pigment turnover."], Proteins: ["Opsins and transducin dominate signaling machinery."], "Chemical Reactions": ["Photon absorption triggers retinal isomerization.", "Second-messenger changes alter channel opening probability."] } },
+      { name: "T Lymphocyte", category: "Immune Cells", icon: "⬢", subtitle: "Adaptive immune strategist", classification: "CD4/CD8 lymphocyte", function: "Recognizes antigens and coordinates targeted immune responses.", size: "7-10 um", energy: 82, chem: 77, membrane: 83, dna: 96, protein: 78, health: 94, status: "Target lock", summary: "Adaptive immune executor using receptor-specific biochemical recognition and clonal activation.", tabs: { Overview: ["Antigen-specific activation drives expansion.", "Signal transduction reshapes metabolism quickly.", "Memory states preserve rapid future responses."], Nucleus: ["Transcription factors control effector differentiation."], Cytoplasm: ["Cytotoxic granules accumulate when activated."], Membrane: ["T-cell receptors cluster into immune synapses."], Organelles: ["Mitochondrial remodeling supports activation."], DNA: ["V(D)J recombination creates receptor diversity."], Proteins: ["Interleukin receptors coordinate growth cues."], "Chemical Reactions": ["Kinase cascades amplify antigen recognition.", "Aerobic glycolysis increases during effector activation."] } },
+      { name: "B Lymphocyte", category: "Immune Cells", icon: "✺", subtitle: "Antibody production cell", classification: "Adaptive humoral immune cell", function: "Produces antibodies and presents antigens to helper T cells.", size: "6-10 um", energy: 79, chem: 76, membrane: 84, dna: 95, protein: 86, health: 93, status: "Antibody primed", summary: "Humoral immunity specialist engineered for receptor diversity and secretory protein output.", tabs: { Overview: ["Differentiates into plasma cells for antibody secretion.", "Surface immunoglobulins capture specific antigens.", "Activation modifies metabolic throughput."], Nucleus: ["Class switching alters antibody isotype expression."], Cytoplasm: ["Secretory machinery expands in plasma transition."], Membrane: ["B-cell receptors cluster after antigen binding."], Organelles: ["ER can dramatically enlarge with secretion demand."], DNA: ["Somatic hypermutation refines affinity."], Proteins: ["Immunoglobulin synthesis dominates active states."], "Chemical Reactions": ["Disulfide bond formation stabilizes antibodies.", "Glycosylation tunes effector function."] } },
+      { name: "Macrophage", category: "Immune Cells", icon: "☉", subtitle: "Phagocytic recycler", classification: "Innate immune phagocyte", function: "Engulfs pathogens and debris while releasing cytokines and growth factors.", size: "21 um", energy: 83, chem: 88, membrane: 80, dna: 90, protein: 81, health: 91, status: "Digesting", summary: "Large innate immune recycler powered by phagolysosomal digestion and inflammatory signaling.", tabs: { Overview: ["Consumes pathogens, apoptotic cells, and debris.", "Phenotype shifts between inflammatory and repair modes.", "Lysosomal machinery drives digestion."], Nucleus: ["Inflammatory genes respond rapidly to stimuli."], Cytoplasm: ["Phagosomes traffic into lysosomal fusion routes."], Membrane: ["Fc and scavenger receptors trigger uptake."], Organelles: ["Lysosomes and Golgi are highly active."], DNA: ["Epigenetic memory can shape macrophage behavior."], Proteins: ["Proteases and cytokines dominate secreted factors."], "Chemical Reactions": ["Nitric oxide chemistry aids pathogen control.", "Acid hydrolases digest engulfed biomolecules."] } },
+      { name: "Neutrophil", category: "Immune Cells", icon: "✷", subtitle: "Rapid-response granulocyte", classification: "Innate granulocytic leukocyte", function: "Performs immediate antimicrobial defense using granules and reactive oxygen species.", size: "10-12 um", energy: 70, chem: 92, membrane: 75, dna: 86, protein: 69, health: 84, status: "Burst ready", summary: "Short-lived first responder optimized for oxidative bursts and enzymatic microbial destruction.", tabs: { Overview: ["Arrives quickly at infection sites.", "Granules release enzymes and antimicrobial proteins.", "Relies heavily on glycolysis."], Nucleus: ["Multi-lobed nucleus aids tissue migration."], Cytoplasm: ["Granule composition determines killing power."], Membrane: ["Adhesion receptors direct vascular exit."], Organelles: ["Few mitochondria compared with many cell types."], DNA: ["Can release NETs from chromatin webs."], Proteins: ["Myeloperoxidase is a key antimicrobial enzyme."], "Chemical Reactions": ["Respiratory bursts generate superoxide and hypochlorite.", "Protease release deconstructs microbial surfaces."] } },
+      { name: "Eosinophil", category: "Immune Cells", icon: "✸", subtitle: "Parasite and allergy modulator", classification: "Granulocytic leukocyte", function: "Targets parasites and contributes to allergic inflammation.", size: "12-17 um", energy: 71, chem: 85, membrane: 79, dna: 88, protein: 72, health: 86, status: "Allergy tuned", summary: "Granule-rich leukocyte balancing parasitic defense with inflammatory mediator release.", tabs: { Overview: ["Prominent in parasitic defense and asthma.", "Granules contain cationic proteins.", "Lipid mediators influence inflammation."], Nucleus: ["Bi-lobed nucleus marks mature morphology."], Cytoplasm: ["Granules dominate internal volume."], Membrane: ["Chemokine receptors guide tissue recruitment."], Organelles: ["Secretory granules support rapid mediator release."], DNA: ["Activation changes cytokine transcription."], Proteins: ["Major basic protein is a signature effector."], "Chemical Reactions": ["Eicosanoid synthesis shapes inflammatory tone.", "Peroxidase chemistry contributes to defense."] } },
+      { name: "Basophil", category: "Immune Cells", icon: "✶", subtitle: "Histamine release cell", classification: "Granulocytic leukocyte", function: "Mediates hypersensitivity responses through histamine-containing granules.", size: "10-14 um", energy: 67, chem: 83, membrane: 77, dna: 87, protein: 70, health: 85, status: "Mediator loaded", summary: "Rare granulocyte storing histamine and heparin for rapid hypersensitivity signaling.", tabs: { Overview: ["Amplifies allergic responses with granule release.", "Surface IgE interactions trigger degranulation.", "Circulates in low abundance."], Nucleus: ["Lobed nucleus is often obscured by granules."], Cytoplasm: ["Dense granules fill the cytoplasm."], Membrane: ["High-affinity IgE receptors drive activation."], Organelles: ["Secretory pathways support mediator replenishment."], DNA: ["Allergic cytokines influence gene expression."], Proteins: ["Histamine-related enzymes and receptors dominate."], "Chemical Reactions": ["Calcium-dependent exocytosis drives degranulation.", "Biogenic amine release changes vascular permeability."] } },
+      { name: "Erythrocyte", category: "Blood Cells", icon: "⬤", subtitle: "Oxygen transport disc", classification: "Anucleate red blood cell", function: "Carries oxygen and carbon dioxide using hemoglobin.", size: "7-8 um", energy: 62, chem: 79, membrane: 85, dna: 0, protein: 68, health: 90, status: "Gas exchange", summary: "Flexible hemoglobin carrier specialized for respiratory gas chemistry without a nucleus.", tabs: { Overview: ["Biconcave geometry boosts diffusion efficiency.", "Lacks nucleus and most organelles.", "Relies on glycolysis for ATP."], Nucleus: ["No nucleus in mature form."], Cytoplasm: ["Hemoglobin fills the cytoplasm."], Membrane: ["Spectrin network preserves deformability."], Organelles: ["Mature cells lack mitochondria and ER."], DNA: ["Genomic material is absent after maturation."], Proteins: ["Hemoglobin dominates protein content."], "Chemical Reactions": ["Iron reversibly binds oxygen in heme.", "Carbonic anhydrase supports CO2 buffering."] } },
+      { name: "Platelet", category: "Blood Cells", icon: "⬣", subtitle: "Clotting fragment", classification: "Megakaryocyte-derived platelet", function: "Forms plugs and releases factors that initiate coagulation and repair.", size: "2-3 um", energy: 58, chem: 81, membrane: 82, dna: 0, protein: 64, health: 87, status: "Coagulating", summary: "Anucleate repair fragment coordinating clot chemistry, adhesion, and tissue sealing.", tabs: { Overview: ["Responds rapidly to vessel injury.", "Alpha and dense granules release repair factors.", "Shape change supports clot assembly."], Nucleus: ["No nucleus present."], Cytoplasm: ["Granules store clotting mediators."], Membrane: ["Integrins bind exposed matrix proteins."], Organelles: ["Contains mitochondria despite lacking nucleus."], DNA: ["No genomic DNA in mature platelet."], Proteins: ["Fibrinogen-binding proteins activate during clotting."], "Chemical Reactions": ["Thromboxane synthesis promotes aggregation.", "Calcium signaling drives granule release."] } },
+      { name: "Monocyte", category: "Blood Cells", icon: "◌", subtitle: "Circulating precursor phagocyte", classification: "Mononuclear leukocyte", function: "Circulates before differentiating into macrophages or dendritic cells.", size: "15-22 um", energy: 75, chem: 78, membrane: 81, dna: 92, protein: 73, health: 89, status: "Differentiating", summary: "Versatile blood-borne precursor that seeds tissues with phagocytic and antigen-presenting functions.", tabs: { Overview: ["Largest common blood leukocyte.", "Transitions into tissue-resident defense cells.", "Responds to chemokine gradients."], Nucleus: ["Kidney-shaped nucleus is characteristic."], Cytoplasm: ["Cytoplasm contains azurophilic granules."], Membrane: ["Adhesion molecules prepare for tissue entry."], Organelles: ["Lysosomal systems expand after differentiation."], DNA: ["Differentiation reprograms chromatin state."], Proteins: ["Cytokine receptors tune inflammatory sensitivity."], "Chemical Reactions": ["Oxidative metabolism rises during maturation.", "Protease processing prepares immune effector proteins."] } },
+      { name: "Plasma Cell", category: "Immune Cells", icon: "✧", subtitle: "Antibody secretion factory", classification: "Terminally differentiated B cell", function: "Secretes large quantities of antibodies into body fluids.", size: "10-20 um", energy: 88, chem: 82, membrane: 80, dna: 94, protein: 98, health: 95, status: "Secreting", summary: "High-output secretory specialist built around ER-rich protein synthesis and antibody export.", tabs: { Overview: ["Dedicated to antibody mass production.", "Rough ER dominates cell volume.", "High unfolded protein control is essential."], Nucleus: ["Clock-face chromatin pattern is common."], Cytoplasm: ["Basophilic cytoplasm reflects ribosome density."], Membrane: ["Reduced receptor emphasis compared with B cells."], Organelles: ["Expanded ER and Golgi sustain secretion."], DNA: ["Transcription centers on immunoglobulin loci."], Proteins: ["Antibody chains are synthesized continuously."], "Chemical Reactions": ["Disulfide assembly and glycosylation drive antibody maturation.", "Secretory vesicle fusion exports immunoglobulins."] } },
+      { name: "Dendritic Cell", category: "Immune Cells", icon: "✵", subtitle: "Antigen presenting networker", classification: "Professional antigen-presenting cell", function: "Captures antigens and activates naive T cells.", size: "12-15 um", energy: 80, chem: 79, membrane: 84, dna: 93, protein: 77, health: 91, status: "Presenting", summary: "Immune communication hub converting environmental sampling into adaptive activation signals.", tabs: { Overview: ["Bridges innate sensing with adaptive immunity.", "Surface area expands through dendritic processes.", "Migration to lymph nodes follows activation."], Nucleus: ["Maturation programs elevate costimulatory molecules."], Cytoplasm: ["Endosomes process antigens into peptides."], Membrane: ["MHC complexes display peptide signatures."], Organelles: ["Endolysosomal systems are central to function."], DNA: ["Pattern sensing reshapes transcriptional output."], Proteins: ["Costimulatory proteins enable T-cell priming."], "Chemical Reactions": ["Proteolysis generates MHC-compatible peptides.", "Redox balance influences antigen processing."] } },
+      { name: "Osteocyte", category: "Human Cells", icon: "⬠", subtitle: "Bone matrix sensor", classification: "Mature bone cell", function: "Maintains mineralized matrix and senses mechanical strain.", size: "10-20 um", energy: 68, chem: 75, membrane: 86, dna: 91, protein: 66, health: 88, status: "Mineral sensing", summary: "Embedded skeletal sensor tuning calcium-phosphate homeostasis and matrix remodeling cues.", tabs: { Overview: ["Lives in lacunae within mineralized bone.", "Long processes connect via canaliculi.", "Coordinates remodeling signals."], Nucleus: ["Stable transcription supports matrix homeostasis."], Cytoplasm: ["Limited cytoplasm extends through narrow channels."], Membrane: ["Mechanosensitive channels detect strain."], Organelles: ["Maintains modest synthetic machinery."], DNA: ["Bone-loading signals alter regulatory pathways."], Proteins: ["Sclerostin is a notable secreted regulator."], "Chemical Reactions": ["Hydroxyapatite balance shapes mineral integrity.", "Calcium signaling transduces mechanical load."] } },
+      { name: "Osteoclast", category: "Human Cells", icon: "⬟", subtitle: "Bone resorption giant", classification: "Multinucleated resorptive cell", function: "Dissolves bone mineral and matrix during remodeling.", size: "20-100 um", energy: 85, chem: 94, membrane: 78, dna: 92, protein: 83, health: 89, status: "Resorbing", summary: "Acid-secreting multinucleated giant that remodels skeleton through mineral dissolution chemistry.", tabs: { Overview: ["Creates resorption pits on bone surfaces.", "High proton pumping acidifies sealed zones.", "Works with osteoblasts during remodeling."], Nucleus: ["Multiple nuclei support large-cell output."], Cytoplasm: ["Actin ring creates resorptive compartment."], Membrane: ["Ruffled border increases secretion interface."], Organelles: ["Lysosomes supply degradative enzymes."], DNA: ["Differentiation is RANKL-responsive."], Proteins: ["Cathepsin K is central to matrix breakdown."], "Chemical Reactions": ["Proton secretion dissolves hydroxyapatite.", "Proteases digest collagen-rich matrix."] } },
+      { name: "Hepatocyte", category: "Human Cells", icon: "◈", subtitle: "Metabolic detox powerhouse", classification: "Parenchymal liver cell", function: "Detoxifies compounds, stores nutrients, and manages central metabolism.", size: "20-30 um", energy: 92, chem: 90, membrane: 84, dna: 93, protein: 88, health: 94, status: "Detox active", summary: "Metabolic command cell integrating carbohydrate, lipid, protein, and xenobiotic chemistry.", tabs: { Overview: ["Coordinates systemic nutrient processing.", "Cytochrome enzymes detoxify diverse compounds.", "Can regenerate effectively after injury."], Nucleus: ["Polyploidy is common in mature hepatocytes."], Cytoplasm: ["Rich in glycogen, smooth ER, and mitochondria."], Membrane: ["Canalicular domains export bile components."], Organelles: ["Smooth ER supports detoxification reactions."], DNA: ["Stress responses activate regenerative genes."], Proteins: ["Albumin and clotting factor synthesis are major outputs."], "Chemical Reactions": ["Phase I and II detoxification modify xenobiotics.", "Urea cycle disposes nitrogen waste."] } },
+      { name: "Adipocyte", category: "Human Cells", icon: "◎", subtitle: "Lipid storage reservoir", classification: "White adipose storage cell", function: "Stores triacylglycerol and secretes metabolic signaling molecules.", size: "50-150 um", energy: 66, chem: 72, membrane: 82, dna: 90, protein: 60, health: 87, status: "Storage mode", summary: "Large lipid reservoir balancing energy storage, endocrine signaling, and membrane compression.", tabs: { Overview: ["Stores fat in a dominant central droplet.", "Acts as an endocrine metabolic organ.", "Expands and contracts with nutrient state."], Nucleus: ["Nucleus is displaced to the periphery."], Cytoplasm: ["Thin cytoplasmic rim surrounds lipid core."], Membrane: ["Insulin signaling regulates uptake and storage."], Organelles: ["ER and mitochondria support lipid turnover."], DNA: ["Hormonal state alters metabolic gene expression."], Proteins: ["Adipokines regulate systemic metabolism."], "Chemical Reactions": ["Lipogenesis converts excess carbon into fat.", "Lipolysis mobilizes stored fatty acids."] } },
+      { name: "Myocyte", category: "Human Cells", icon: "▣", subtitle: "Contractile muscle fiber", classification: "Skeletal muscle cell", function: "Contracts using actin-myosin cross-bridges to generate force.", size: "10-100 um diameter", energy: 95, chem: 84, membrane: 83, dna: 91, protein: 92, health: 93, status: "Contracting", summary: "Energy-intensive contractile fiber driven by calcium-triggered actomyosin chemistry.", tabs: { Overview: ["Force generation depends on sarcomere cycling.", "Mitochondrial density varies with fiber type.", "Calcium handling dictates contraction timing."], Nucleus: ["Multiple peripheral nuclei support large fibers."], Cytoplasm: ["Myofibrils fill much of the sarcoplasm."], Membrane: ["Sarcolemma propagates excitation rapidly."], Organelles: ["Sarcoplasmic reticulum releases calcium."], DNA: ["Training adjusts expression of structural proteins."], Proteins: ["Actin, myosin, and troponin dominate."], "Chemical Reactions": ["ATP hydrolysis powers cross-bridge cycling.", "Creatine phosphate buffers immediate energy demand."] } },
+      { name: "Keratinocyte", category: "Human Cells", icon: "⬓", subtitle: "Barrier-forming skin cell", classification: "Epidermal epithelial cell", function: "Builds protective skin layers and synthesizes keratin.", size: "30 um", energy: 64, chem: 68, membrane: 89, dna: 88, protein: 74, health: 90, status: "Barrier strong", summary: "Epithelial barrier specialist forming protective, keratin-rich, mechanically resilient surfaces.", tabs: { Overview: ["Progressively differentiates toward surface layers.", "Produces keratin and barrier lipids.", "Responds to UV and injury cues."], Nucleus: ["Eventually lost in terminally differentiated forms."], Cytoplasm: ["Keratin filaments build structural strength."], Membrane: ["Tight junctions reinforce barrier integrity."], Organelles: ["Lamellar bodies secrete lipid barriers."], DNA: ["Repair pathways counter ultraviolet damage."], Proteins: ["Keratin synthesis defines identity."], "Chemical Reactions": ["Ceramide synthesis supports water barrier function.", "Oxidative stress responses limit UV injury."] } },
+      { name: "Guard Cell", category: "Plant Cells", icon: "❉", subtitle: "Stomatal aperture regulator", classification: "Specialized plant epidermal cell", function: "Controls stomatal opening for gas exchange and transpiration.", size: "20-40 um", energy: 74, chem: 73, membrane: 88, dna: 91, protein: 69, health: 92, status: "Stoma tuning", summary: "Plant epidermal actuator using ion flux and turgor chemistry to regulate stomata.", tabs: { Overview: ["Paired cells alter pore opening by turgor changes.", "Photosensitive signaling affects aperture.", "Balances CO2 uptake with water loss."], Nucleus: ["Transcription follows light and stress cues."], Cytoplasm: ["Vacuolar volume shifts alter mechanics."], Membrane: ["Potassium pumps drive osmotic movement."], Organelles: ["Contains chloroplasts unlike many epidermal cells."], DNA: ["ABA signaling rewires stress gene responses."], Proteins: ["Ion channels coordinate stomatal gating."], "Chemical Reactions": ["Malate and potassium accumulation draw in water.", "ABA-driven signaling promotes stomatal closure."] } },
+      { name: "Mesophyll Cell", category: "Plant Cells", icon: "❈", subtitle: "Photosynthetic carbon fixer", classification: "Leaf parenchyma cell", function: "Performs photosynthesis and carbohydrate production.", size: "20-50 um", energy: 89, chem: 87, membrane: 86, dna: 92, protein: 81, health: 95, status: "Carbon fixing", summary: "Chloroplast-rich photosynthetic engine converting light energy into carbon chemistry.", tabs: { Overview: ["Packed with chloroplasts for photosynthesis.", "Intercellular spaces support gas diffusion.", "Produces sugars from CO2 fixation."], Nucleus: ["Light-responsive genes regulate chloroplast proteins."], Cytoplasm: ["Chloroplast streaming optimizes light capture."], Membrane: ["Thylakoid membranes host photochemistry."], Organelles: ["Chloroplasts and vacuoles dominate structure."], DNA: ["Nuclear and chloroplast genomes coordinate protein synthesis."], Proteins: ["Rubisco is highly abundant."], "Chemical Reactions": ["Light reactions generate ATP and NADPH.", "Calvin cycle fixes CO2 into sugars."] } },
+      { name: "Root Hair Cell", category: "Plant Cells", icon: "✿", subtitle: "Absorption surface extension", classification: "Root epidermal cell", function: "Absorbs water and minerals by expanding root surface area.", size: "80-1500 um length", energy: 63, chem: 71, membrane: 90, dna: 90, protein: 65, health: 91, status: "Uptake active", summary: "Elongated plant uptake cell maximizing membrane area for water and ion absorption.", tabs: { Overview: ["Thin extension increases absorptive surface area.", "Anchors ionic exchange with the soil solution.", "Works closely with proton gradients."], Nucleus: ["Nucleus supports active transport gene expression."], Cytoplasm: ["Dense transport machinery concentrates near the tip."], Membrane: ["Transporters import nitrate, phosphate, and potassium."], Organelles: ["Vacuoles help sustain elongation."], DNA: ["Nutrient status changes transporter transcription."], Proteins: ["Membrane pumps dominate energetic demand."], "Chemical Reactions": ["Proton extrusion acidifies the rhizosphere.", "Ion cotransport enables mineral uptake."] } },
+      { name: "Xylem Vessel Element", category: "Plant Cells", icon: "✢", subtitle: "Water conduction tube", classification: "Lignified vascular cell", function: "Forms hollow conduits for water transport from roots to shoots.", size: "varied elongated", energy: 5, chem: 55, membrane: 0, dna: 0, protein: 8, health: 78, status: "Conduction path", summary: "Dead lignified transport element preserving structural channels for long-distance water movement.", tabs: { Overview: ["Mature vessel elements are hollow and dead.", "Lignin reinforces walls against tension.", "Arranged into conductive pipelines."], Nucleus: ["No nucleus in mature vessel element."], Cytoplasm: ["Cytoplasm is absent after maturation."], Membrane: ["Membrane disappears in the mature state."], Organelles: ["Organelles are absent when functional."], DNA: ["Genomic material is lost after maturation."], Proteins: ["Only residual wall-associated proteins remain."], "Chemical Reactions": ["Lignification hardens the secondary wall.", "Water cohesion and tension drive ascent."] } }
+    ];
+
+    const tabs = ["Overview", "Nucleus", "Cytoplasm", "Membrane", "Organelles", "DNA", "Proteins", "Chemical Reactions"];
+    const categories = ["All Cells", "Human Cells", "Blood Cells", "Neural Cells", "Immune Cells", "Plant Cells"];
+    const chemistryFacts = [
+      "Calcium ions act as universal intracellular messengers that rapidly translate chemical signals into cellular action.",
+      "Membrane fluidity depends strongly on fatty acid saturation and cholesterol content.",
+      "ATP synthase is a rotary molecular machine that converts proton gradients into chemical energy.",
+      "Hemoglobin changes conformation cooperatively, allowing oxygen loading and unloading to stay efficient.",
+      "Photosynthesis turns photon energy into stable carbon bonds through linked redox chemistry.",
+      "DNA repair pathways constantly scan genomes to correct oxidative, UV, and replication-related damage."
+    ];
+    const assistantReplies = {
+      "Summarize energy profile": "Energy intensity is highest where ion transport, secretion, or contraction dominate. Compare the live energy meter with protein synthesis to spot metabolically expensive cells.",
+      "Explain DNA integrity": "DNA integrity estimates how stable the genome remains under oxidative stress, replication burden, and repair load. Long-lived cells benefit from strong repair and chromatin control.",
+      "Compare with another cell": "Select a second cell from the library and I’ll help you compare metabolic load, membrane stability, and synthesis rate side by side."
+    };
+
+    let activeCategory = "All Cells";
+    let activeCell = cells[0];
+    let activeTab = "Overview";
+    let reactorRotation = 0;
+    let reactorZoom = 1;
+    let animationPaused = false;
+    let soundOn = true;
+    let metricsTimer;
+
+    const els = {
+      body: document.body,
+      filters: document.getElementById("filters"),
+      cellList: document.getElementById("cellList"),
+      cellCount: document.getElementById("cellCount"),
+      searchInput: document.getElementById("searchInput"),
+      tabBar: document.getElementById("tabBar"),
+      tabContent: document.getElementById("tabContent"),
+      cellTitle: document.getElementById("cellTitle"),
+      cellSummary: document.getElementById("cellSummary"),
+      classification: document.getElementById("classification"),
+      cellSize: document.getElementById("cellSize"),
+      progressGroup: document.getElementById("progressGroup"),
+      radials: document.getElementById("radials"),
+      statusBadges: document.getElementById("statusBadges"),
+      healthBadge: document.getElementById("healthBadge"),
+      metaCell: document.getElementById("metaCell"),
+      metaChem: document.getElementById("metaChem"),
+      metaStability: document.getElementById("metaStability"),
+      metaMode: document.getElementById("metaMode"),
+      reactorStage: document.getElementById("reactorStage"),
+      moleculeCore: document.getElementById("moleculeCore"),
+      speedSlider: document.getElementById("speedSlider"),
+      speedValue: document.getElementById("speedValue"),
+      themeToggle: document.getElementById("themeToggle"),
+      soundToggle: document.getElementById("soundToggle"),
+      clock: document.getElementById("clock"),
+      toasts: document.getElementById("toasts"),
+      loader: document.getElementById("loader"),
+      tooltip: document.getElementById("tooltip"),
+      assistantBtn: document.getElementById("assistantBtn"),
+      chatbot: document.getElementById("chatbot"),
+      assistantText: document.getElementById("assistantText"),
+      factBtn: document.getElementById("factBtn"),
+      factText: document.getElementById("factText"),
+      factLabel: document.getElementById("factLabel"),
+      floatingFact: document.getElementById("floatingFact"),
+      systemMetrics: document.getElementById("systemMetrics"),
+      cursor: document.getElementById("cursor"),
+      screenshotBtn: document.getElementById("screenshotBtn"),
+      exportBtn: document.getElementById("exportBtn"),
+      dashboardFs: document.getElementById("dashboardFs"),
+      notifyBtn: document.getElementById("notifyBtn"),
+      app: document.getElementById("app"),
+      rotateLeft: document.getElementById("rotateLeft"),
+      rotateRight: document.getElementById("rotateRight"),
+      zoomIn: document.getElementById("zoomIn"),
+      zoomOut: document.getElementById("zoomOut"),
+      pauseAnim: document.getElementById("pauseAnim"),
+      resetView: document.getElementById("resetView"),
+      reactorFs: document.getElementById("reactorFs"),
+      scanLabel: document.getElementById("scanLabel"),
+      chemSymbols: document.getElementById("chemSymbols"),
+      bubbleLayer: document.getElementById("bubbleLayer"),
+      sparkOne: document.getElementById("sparkOne"),
+      sparkTwo: document.getElementById("sparkTwo")
+    };
+
+    const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    function showToast(title, message) {
+      const node = document.createElement("div");
+      node.className = "toast";
+      node.innerHTML = `<b>${title}</b><div>${message}</div>`;
+      els.toasts.prepend(node);
+      setTimeout(() => node.remove(), 3400);
+    }
+
+    function renderFilters() {
+      els.filters.innerHTML = "";
+      categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = `chip ${cat === activeCategory ? "active" : ""}`;
+        btn.textContent = cat;
+        btn.onclick = () => { activeCategory = cat; renderFilters(); renderCells(); };
+        els.filters.appendChild(btn);
+      });
+    }
+
+    function filteredCells() {
+      const q = els.searchInput.value.trim().toLowerCase();
+      return cells.filter(cell => {
+        const catOk = activeCategory === "All Cells" || cell.category === activeCategory;
+        const searchOk = !q || [cell.name, cell.subtitle, cell.classification, cell.category].join(" ").toLowerCase().includes(q);
+        return catOk && searchOk;
+      });
+    }
+
+    function createRipple(event, card) {
+      const ripple = document.createElement("span");
+      ripple.className = "ripple";
+      const rect = card.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = size + "px";
+      ripple.style.left = (event.clientX - rect.left - size / 2) + "px";
+      ripple.style.top = (event.clientY - rect.top - size / 2) + "px";
+      card.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 650);
+    }
+
+    function renderCells() {
+      const list = filteredCells();
+      els.cellCount.textContent = `${list.length} cells`;
+      els.cellList.innerHTML = "";
+      list.forEach(cell => {
+        const card = document.createElement("div");
+        card.className = `cell-card ${activeCell.name === cell.name ? "active" : ""}`;
+        card.innerHTML = `
+          <div class="cell-icon">${cell.icon}</div>
+          <div>
+            <div class="cell-name">${cell.name}</div>
+            <div class="cell-sub">${cell.subtitle}</div>
+          </div>
+          <div class="status-dot"></div>
+        `;
+        card.onclick = (event) => {
+          createRipple(event, card);
+          activeCell = cell;
+          updateAnalysis();
+          renderCells();
+          showToast("Cell Selected", `${cell.name} loaded into the molecular reactor.`);
+          burst(event.clientX, event.clientY);
+        };
+        els.cellList.appendChild(card);
+      });
+    }
+
+    function metricLine(label, value) {
+      return `
+        <div class="progress-item">
+          <div class="progress-top"><span>${label}</span><strong class="counter" data-value="${value}">0%</strong></div>
+          <div class="progress-track"><div class="progress-bar" style="width:${value}%"></div></div>
+        </div>
+      `;
+    }
+
+    function radialCard(label, value, color) {
+      return `
+        <div class="radial">
+          <div class="radial-ring" style="--deg:${value * 3.6}deg; box-shadow:0 0 20px ${color}33;">
+            <strong class="counter" data-value="${value}">0%</strong>
+          </div>
+          <div>${label}</div>
+        </div>
+      `;
+    }
+
+    function updateAnalysis() {
+      const cell = activeCell;
+      els.cellTitle.textContent = cell.name;
+      els.cellSummary.textContent = cell.summary;
+      els.classification.textContent = cell.category;
+      els.cellSize.textContent = cell.size;
+      els.healthBadge.textContent = `Health ${cell.health}%`;
+      els.metaCell.textContent = cell.name;
+      els.metaChem.textContent = `${cell.chem}%`;
+      els.metaStability.textContent = `${cell.membrane}%`;
+      els.metaMode.textContent = cell.status;
+
+      els.progressGroup.innerHTML = [
+        metricLine("Energy Level", cell.energy),
+        metricLine("Chemical Activity", cell.chem),
+        metricLine("Membrane Stability", cell.membrane),
+        metricLine("DNA Integrity", cell.dna),
+        metricLine("Protein Synthesis Rate", cell.protein),
+        metricLine("Cellular Health Score", cell.health)
+      ].join("");
+
+      els.radials.innerHTML = [
+        radialCard("Energy", cell.energy, "#66f7ff"),
+        radialCard("DNA", Math.max(cell.dna, 0), "#b06dff"),
+        radialCard("Proteins", cell.protein, "#6cff95")
+      ].join("");
+
+      els.statusBadges.innerHTML = `
+        <span class="badge">Classification: ${cell.classification}</span>
+        <span class="badge">Function: ${cell.function}</span>
+        <span class="badge">Status: ${cell.status}</span>
+      `;
+
+      renderTabs();
+      animateCounters();
+      drawSpark(els.sparkOne, [cell.energy, cell.chem, cell.membrane, cell.health, cell.protein, cell.dna]);
+      drawSpark(els.sparkTwo, [cell.protein, cell.health, cell.energy, cell.chem, cell.membrane, Math.max(cell.dna, 6)]);
+      recolorReactor(cell);
+    }
+
+    function renderTabBar() {
+      els.tabBar.innerHTML = "";
+      tabs.forEach(tab => {
+        const btn = document.createElement("button");
+        btn.className = `tab ${tab === activeTab ? "active" : ""}`;
+        btn.textContent = tab;
+        btn.onclick = () => { activeTab = tab; renderTabBar(); renderTabs(); };
+        els.tabBar.appendChild(btn);
+      });
+    }
+
+    function renderTabs() {
+      renderTabBar();
+      const info = activeCell.tabs[activeTab];
+      els.tabContent.innerHTML = info.map((text, index) => `
+        <div class="info-card">
+          <h4>${activeTab} Insight ${index + 1}</h4>
+          <p>${text}</p>
+          <div class="diagram"></div>
+        </div>
+      `).join("");
+      while (els.tabContent.children.length < 4) {
+        const extra = document.createElement("div");
+        extra.className = "info-card";
+        extra.innerHTML = `<h4>${activeTab} Signal</h4><p>${activeCell.name} maintains a ${["stable", "responsive", "reactive", "adaptive"][els.tabContent.children.length % 4]} molecular state in this compartment.</p><div class="diagram"></div>`;
+        els.tabContent.appendChild(extra);
+      }
+    }
+
+    function animateCounters() {
+      document.querySelectorAll(".counter").forEach(node => {
+        const target = Number(node.dataset.value) || 0;
+        const start = performance.now();
+        const duration = 900;
+        const tick = (time) => {
+          const p = clamp((time - start) / duration, 0, 1);
+          node.textContent = `${Math.round(target * (1 - Math.pow(1 - p, 3)))}%`;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }
+
+    function drawSpark(svg, values) {
+      const width = 180, height = 72;
+      const points = values.map((v, i) => {
+        const x = i * (width / (values.length - 1));
+        const y = height - (v / 100) * 56 - 8;
+        return `${x},${y}`;
+      }).join(" ");
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="grad-${svg.id}" x1="0" x2="1">
+            <stop offset="0%" stop-color="var(--cyan)" />
+            <stop offset="50%" stop-color="var(--purple)" />
+            <stop offset="100%" stop-color="var(--green)" />
+          </linearGradient>
+        </defs>
+        <polyline fill="none" stroke="url(#grad-${svg.id})" stroke-width="4" points="${points}" stroke-linecap="round" stroke-linejoin="round"/>
+        ${values.map((v, i) => {
+        const x = i * (width / (values.length - 1));
+        const y = height - (v / 100) * 56 - 8;
+        return `<circle cx="${x}" cy="${y}" r="3.5" fill="var(--cyan)" />`;
+      }).join("")}
+      `;
+    }
+
+    function recolorReactor(cell) {
+      const hue = (cell.energy + cell.chem) * 1.5;
+      els.reactorStage.style.boxShadow = `inset 0 0 80px hsla(${hue}, 90%, 55%, .08), 0 0 50px rgba(102,247,255,.08)`;
+      els.scanLabel.textContent = `${cell.name} chemistry in ${cell.status.toLowerCase()} state`;
+    }
+
+    function updateClock() {
+      const now = new Date();
+      els.clock.textContent = now.toLocaleTimeString();
+    }
+
+    function startMetrics() {
+      const render = () => {
+        const items = [
+          { label: "Core Temp", value: `${(36 + Math.random() * 1.8).toFixed(1)} C` },
+          { label: "Quantum Flux", value: `${(70 + Math.random() * 29).toFixed(0)}%` },
+          { label: "Bio Signal", value: `${(120 + Math.random() * 18).toFixed(0)} bpm` },
+          { label: "Scan Noise", value: `${(3 + Math.random() * 4).toFixed(1)} dB` }
+        ];
+        els.systemMetrics.innerHTML = items.map(item => `<div class="metric-pill"><div class="meta-label">${item.label}</div><div class="meta-value">${item.value}</div></div>`).join("");
+      };
+      render();
+      metricsTimer = setInterval(render, 2200);
+    }
+
+    function randomFact() {
+      const fact = chemistryFacts[Math.floor(Math.random() * chemistryFacts.length)];
+      els.factText.textContent = fact;
+      els.factLabel.textContent = "Chemistry fact refreshed";
+      els.floatingFact.textContent = fact;
+      els.floatingFact.style.display = "block";
+      setTimeout(() => els.floatingFact.style.display = "none", 2600);
+    }
+
+    function burst(x, y) {
+      for (let i = 0; i < 16; i++) {
+        const dot = document.createElement("span");
+        dot.className = "trail";
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+        dot.style.width = dot.style.height = `${rand(6, 14)}px`;
+        dot.style.background = `radial-gradient(circle, hsla(${rand(160, 310)},100%,70%,.9), transparent 65%)`;
+        const dx = rand(-70, 70), dy = rand(-70, 70);
+        dot.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(.2)`, opacity: 0 }], { duration: 600, easing: "ease-out" });
+        document.body.appendChild(dot);
+        setTimeout(() => dot.remove(), 620);
+      }
+    }
+
+    function addCursorTrail(x, y) {
+      const t = document.createElement("div");
+      t.className = "trail";
+      t.style.left = `${x}px`;
+      t.style.top = `${y}px`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 620);
+    }
+
+    function setupSymbols() {
+      const symbols = ["H", "O", "N", "C", "Na", "K", "Ca", "Cl", "ATP", "DNA"];
+      els.chemSymbols.innerHTML = symbols.map((s, i) => `<span style="left:${8 + i * 9}%;top:${12 + (i % 4) * 19}%;animation-delay:${i * .45}s">${s}</span>`).join("");
+      els.bubbleLayer.innerHTML = Array.from({ length: 14 }, (_, i) => `<span style="left:${rand(2, 96)}%;bottom:-${rand(5, 60)}px;animation-duration:${rand(8, 18)}s;animation-delay:${-rand(0, 12)}s;width:${rand(10, 28)}px;height:${rand(10, 28)}px"></span>`).join("");
+    }
+
+    function download(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    }
+
+    async function captureScreenshot() {
+      const clone = els.app.cloneNode(true);
+      clone.style.height = "100vh";
+      clone.style.width = "100vw";
+      clone.style.background = getComputedStyle(document.body).backgroundImage;
+      const css = [...document.styleSheets].map(sheet => {
+        try { return [...sheet.cssRules].map(rule => rule.cssText).join(""); }
+        catch { return ""; }
+      }).join("");
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:1600px;height:1000px;transform:scale(1);transform-origin:top left;">
+              <style>${css}</style>
+              ${clone.outerHTML}
+            </div>
+          </foreignObject>
+        </svg>`;
+      const img = new Image();
+      const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1600;
+        canvas.height = 1000;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(blob => {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `quantum_molecule_nexus_${Date.now()}.png`;
+          a.click();
+          showToast("Snapshot Ready", "Dashboard screenshot downloaded.");
+        });
+      };
+      img.src = url;
+    }
+
+    function toggleFullscreen(target) {
+      if (!document.fullscreenElement) {
+        target.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+
+    function applyReactorTransform(extraX = 0, extraY = 0) {
+      els.moleculeCore.style.transform = `translate(-50%,-50%) rotateY(${reactorRotation + extraX}deg) rotateX(${extraY}deg) scale(${reactorZoom})`;
+    }
+
+    function bindControls() {
+      els.searchInput.addEventListener("input", renderCells);
+      els.themeToggle.onclick = () => {
+        document.body.classList.toggle("light");
+        showToast("Theme Shift", document.body.classList.contains("light") ? "Light futurism enabled." : "Deep-space mode enabled.");
+      };
+      els.soundToggle.onclick = () => {
+        soundOn = !soundOn;
+        els.soundToggle.textContent = soundOn ? "Sound" : "Muted";
+        showToast("Audio Cues", soundOn ? "Status sounds simulated." : "Audio cues muted.");
+      };
+      els.assistantBtn.onclick = () => els.chatbot.classList.toggle("open");
+      els.factBtn.onclick = () => { randomFact(); showToast("Lab Fact", "Fresh chemistry insight generated."); };
+      els.notifyBtn.onclick = () => showToast("Notifications", "3 simulated alerts: membrane scan, ATP drift, export queue.");
+      els.exportBtn.onclick = () => {
+        download(`${activeCell.name.toLowerCase().replace(/\s+/g, "_")}_dossier.json`, JSON.stringify(activeCell, null, 2), "application/json");
+        showToast("Export Complete", `${activeCell.name} dossier saved as JSON.`);
+      };
+      els.screenshotBtn.onclick = captureScreenshot;
+      els.dashboardFs.onclick = () => toggleFullscreen(document.documentElement);
+      els.reactorFs.onclick = () => toggleFullscreen(els.reactorStage);
+      els.rotateLeft.onclick = () => { reactorRotation -= 24; applyReactorTransform(); };
+      els.rotateRight.onclick = () => { reactorRotation += 24; applyReactorTransform(); };
+      els.zoomIn.onclick = () => { reactorZoom = clamp(reactorZoom + .12, .7, 1.8); applyReactorTransform(); };
+      els.zoomOut.onclick = () => { reactorZoom = clamp(reactorZoom - .12, .7, 1.8); applyReactorTransform(); };
+      els.resetView.onclick = () => { reactorRotation = 0; reactorZoom = 1; applyReactorTransform(); showToast("View Reset", "Reactor orientation restored."); };
+      els.pauseAnim.onclick = () => {
+        animationPaused = !animationPaused;
+        document.documentElement.style.setProperty("--speed", animationPaused ? 0.0001 : els.speedSlider.value);
+        els.pauseAnim.textContent = animationPaused ? "Resume" : "Pause";
+      };
+      els.speedSlider.oninput = () => {
+        document.documentElement.style.setProperty("--speed", els.speedSlider.value);
+        els.speedValue.textContent = `${Number(els.speedSlider.value).toFixed(1)}x`;
+      };
+      els.reactorStage.addEventListener("mousemove", e => {
+        const rect = els.reactorStage.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width - .5) * 22;
+        const y = ((e.clientY - rect.top) / rect.height - .5) * -18;
+        applyReactorTransform(x, y);
+      });
+      els.reactorStage.addEventListener("mouseleave", () => applyReactorTransform());
+
+      document.addEventListener("mousemove", e => {
+        document.body.style.setProperty("--cursor-x", `${e.clientX}px`);
+        document.body.style.setProperty("--cursor-y", `${e.clientY}px`);
+        els.cursor.style.left = `${e.clientX}px`;
+        els.cursor.style.top = `${e.clientY}px`;
+        if (Math.random() < .28) addCursorTrail(e.clientX, e.clientY);
+      });
+
+      document.addEventListener("click", e => burst(e.clientX, e.clientY));
+
+      document.querySelectorAll("[data-tip]").forEach(el => {
+        el.addEventListener("mouseenter", () => {
+          els.tooltip.textContent = el.dataset.tip;
+          els.tooltip.classList.add("show");
+        });
+        el.addEventListener("mousemove", e => {
+          els.tooltip.style.left = `${e.clientX}px`;
+          els.tooltip.style.top = `${e.clientY - 18}px`;
+        });
+        el.addEventListener("mouseleave", () => els.tooltip.classList.remove("show"));
+      });
+
+      document.querySelectorAll("[data-assist]").forEach(btn => {
+        btn.onclick = () => { els.assistantText.textContent = assistantReplies[btn.dataset.assist]; };
+      });
+
+      document.addEventListener("keydown", e => {
+        if (e.key.toLowerCase() === "f") { toggleFullscreen(document.documentElement) }
+        if (e.key.toLowerCase() === "t") { document.body.classList.toggle("light") }
+        if (e.key.toLowerCase() === "p") { els.pauseAnim.click() }
+        if (e.key.toLowerCase() === "e") { els.exportBtn.click() }
+        if (e.key.toLowerCase() === "/") { e.preventDefault(); els.searchInput.focus() }
+        if (e.key === "ArrowRight") { els.rotateRight.click() }
+        if (e.key === "ArrowLeft") { els.rotateLeft.click() }
+      });
+    }
+
+    function init() {
+      renderFilters();
+      renderCells();
+      updateAnalysis();
+      updateClock();
+      startMetrics();
+      setupSymbols();
+      bindControls();
+      randomFact();
+      setInterval(updateClock, 1000);
+      setTimeout(() => els.loader.classList.add("hidden"), 1600);
+      showToast("QuantumMolecule Nexus", "Interactive chemistry dashboard is online.");
+    }
+
+    init();
+  </script>
+</body>
+
+</html>
