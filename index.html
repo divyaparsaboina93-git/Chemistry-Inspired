@@ -268,6 +268,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
       padding: 14px 18px;
       border: 1px solid rgba(255, 255, 255, .08);
     }
@@ -288,7 +290,9 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px
+      gap: 14px;
+      min-width: 0;
+      flex: 1 1 320px
     }
 
     .logo {
@@ -318,17 +322,18 @@
 
     .brand h1 {
       margin: 0;
-      font-size: 1.45rem;
-      letter-spacing: .05em
+      font-size: clamp(1.15rem, 1.9vw, 1.9rem);
+      letter-spacing: .04em;
+      line-height: 1.08
     }
 
     .typing {
-      display: inline-block;
-      white-space: nowrap;
-      overflow: hidden;
-      border-right: 2px solid var(--cyan);
-      width: 0;
-      animation: reveal 5s steps(28, end) forwards, typingCaret .8s step-end infinite;
+      display: block;
+      white-space: normal;
+      overflow: visible;
+      border-right: none;
+      width: auto;
+      animation: none;
     }
 
     @keyframes reveal {
@@ -346,9 +351,10 @@
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      justify-content: flex-end
+      justify-content: flex-end;
+      flex: 1 1 420px
     }
 
     .chip,
@@ -364,10 +370,15 @@
     .icon-btn,
     .chip {
       padding: 10px 12px;
+      min-height: 42px;
       border-radius: 14px;
       cursor: pointer;
       transition: .25s ease;
       backdrop-filter: blur(10px)
+    }
+
+    .icon-btn {
+      min-width: 96px
     }
 
     .icon-btn:hover,
@@ -382,7 +393,7 @@
     .metric-pill {
       padding: 10px 14px;
       border-radius: 14px;
-      min-width: 92px;
+      min-width: 0;
       text-align: center
     }
 
@@ -403,7 +414,7 @@
 
     .main {
       display: grid;
-      grid-template-columns: 340px 1fr 360px;
+      grid-template-columns: minmax(300px, 340px) minmax(0, 1fr) minmax(320px, 360px);
       gap: 14px;
       min-height: 0;
     }
@@ -436,9 +447,15 @@
       color: var(--muted)
     }
 
-    .search-wrap {
-      position: relative;
+    .search-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 154px;
+      gap: 10px;
       margin-bottom: 14px
+    }
+
+    .search-wrap {
+      position: relative
     }
 
     .search-wrap input {
@@ -464,10 +481,27 @@
       color: var(--cyan)
     }
 
+    .cell-select {
+      width: 100%;
+      padding: 13px 14px;
+      margin-bottom: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(102, 247, 255, .45);
+      background: rgba(8, 20, 35, .55);
+      color: var(--text);
+      outline: none;
+      box-shadow: 0 0 18px rgba(102, 247, 255, .12) inset;
+      cursor: pointer
+    }
+
+    body.light .cell-select {
+      background: rgba(255, 255, 255, .72)
+    }
+
     .filters {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 12px
     }
 
@@ -478,11 +512,12 @@
 
     .cell-list {
       overflow: auto;
-      padding-right: 6px;
+      padding-right: 2px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      min-height: 0
+      min-height: 0;
+      flex: 1 1 auto
     }
 
     .cell-list::-webkit-scrollbar,
@@ -503,10 +538,10 @@
     .cell-card {
       position: relative;
       display: grid;
-      grid-template-columns: 56px 1fr 12px;
+      grid-template-columns: 52px minmax(0, 1fr);
       gap: 12px;
-      align-items: center;
-      padding: 12px;
+      align-items: start;
+      padding: 12px 40px 12px 12px;
       border-radius: 18px;
       border: 1px solid rgba(102, 247, 255, .12);
       cursor: pointer;
@@ -515,14 +550,18 @@
       background: rgba(255, 255, 255, .03)
     }
 
+    .cell-card>div:nth-child(2) {
+      min-width: 0;
+    }
+
     .cell-card.active {
       border-color: rgba(102, 247, 255, .58);
       box-shadow: 0 0 0 1px rgba(102, 247, 255, .38), 0 0 22px rgba(102, 247, 255, .22)
     }
 
     .cell-icon {
-      width: 56px;
-      height: 56px;
+      width: 52px;
+      height: 52px;
       border-radius: 18px;
       display: grid;
       place-items: center;
@@ -542,16 +581,25 @@
     }
 
     .cell-name {
-      font-weight: 700
+      font-weight: 700;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+      white-space: normal
     }
 
     .cell-sub {
       color: var(--muted);
       font-size: .83rem;
-      margin-top: 3px
+      margin-top: 3px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      white-space: normal
     }
 
     .status-dot {
+      position: absolute;
+      top: 16px;
+      right: 14px;
       width: 10px;
       height: 10px;
       border-radius: 50%;
@@ -585,7 +633,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 12px;
       flex-wrap: wrap
     }
@@ -593,12 +641,17 @@
     .control-row,
     .utility-row {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: wrap
     }
 
     .control-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 10px 12px;
+      min-height: 42px;
+      min-width: 110px;
       border-radius: 14px;
       border: 1px solid var(--line);
       background: rgba(255, 255, 255, .05);
@@ -677,7 +730,7 @@
     .molecule-core {
       position: absolute;
       left: 50%;
-      top: 52%;
+      top: calc(50% - 26px);
       width: 220px;
       height: 220px;
       transform: translate(-50%, -50%);
@@ -1055,7 +1108,9 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      min-height: 0
+      min-height: 0;
+      padding-left: 20px;
+      padding-right: 108px
     }
 
     .tab-bar {
@@ -1135,7 +1190,6 @@
     .assistant-btn,
     .toast-wrap,
     .loader,
-    .metrics-cluster,
     .sound-indicator,
     .cursor,
     .tooltip,
@@ -1161,12 +1215,12 @@
     }
 
     .assistant-btn {
-      bottom: 26px;
+      bottom: 32px;
       font-size: 1.3rem
     }
 
     .sound-indicator {
-      bottom: 94px
+      bottom: 102px
     }
 
     .tooltip {
@@ -1260,14 +1314,19 @@
     }
 
     .facts {
+      display: none;
       left: 18px;
-      bottom: 20px;
-      max-width: 340px;
+      bottom: 22px;
+      max-width: 300px;
       padding: 14px 16px;
       border-radius: 18px;
       background: rgba(6, 17, 31, .82);
       border: 1px solid var(--line);
       box-shadow: var(--shadow)
+    }
+
+    .facts.show {
+      display: block
     }
 
     .facts h4 {
@@ -1282,12 +1341,18 @@
     }
 
     .metrics-cluster {
-      top: 100px;
-      left: 18px;
-      display: flex;
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
-      flex-wrap: wrap;
-      max-width: 420px
+      width: 100%;
+      margin-bottom: 16px
+    }
+
+    .metrics-cluster .metric-pill {
+      width: 100%;
+      min-width: 0;
+      padding: 10px 12px
     }
 
     .fact-floating {
@@ -1411,7 +1476,7 @@
 
     @media (max-width: 1240px) {
       .main {
-        grid-template-columns: 300px 1fr
+        grid-template-columns: minmax(280px, 300px) minmax(0, 1fr)
       }
 
       .analysis {
@@ -1451,6 +1516,14 @@
         justify-content: flex-start
       }
 
+      .control-btn {
+        min-width: 0;
+      }
+
+      .search-controls {
+        grid-template-columns: 1fr;
+      }
+
       .tab-content {
         grid-template-columns: 1fr
       }
@@ -1481,6 +1554,14 @@
       .sound-indicator {
         right: 16px
       }
+
+      .bottom {
+        padding-right: 16px
+      }
+
+      .metrics-cluster {
+        grid-template-columns: 1fr
+      }
     }
   </style>
 </head>
@@ -1496,7 +1577,6 @@
   <div class="cursor" id="cursor"></div>
   <div class="tooltip" id="tooltip"></div>
   <div class="toast-wrap" id="toasts"></div>
-  <div class="metrics-cluster" id="systemMetrics"></div>
   <div class="fact-floating" id="floatingFact"></div>
 
   <div class="app" id="app">
@@ -1526,6 +1606,7 @@
 
     <section class="main">
       <aside class="glass sidebar">
+        <div class="metrics-cluster" id="systemMetrics"></div>
         <div class="panel-title">
           <h2>Chemical Cell Library</h2>
           <small id="cellCount">25 cells</small>
@@ -1534,6 +1615,9 @@
           <input id="searchInput" type="text" placeholder="Search cellular signatures..." />
           <span>⌕</span>
         </div>
+        <select class="cell-select" id="cellSelect" title="Choose a cell">
+          <option value="">Choose cell</option>
+        </select>
         <div class="filters" id="filters"></div>
         <div class="cell-list" id="cellList"></div>
       </aside>
@@ -1728,7 +1812,9 @@
       filters: document.getElementById("filters"),
       cellList: document.getElementById("cellList"),
       cellCount: document.getElementById("cellCount"),
+      cellSelect: document.getElementById("cellSelect"),
       searchInput: document.getElementById("searchInput"),
+      searchWrap: document.querySelector(".search-wrap"),
       tabBar: document.getElementById("tabBar"),
       tabContent: document.getElementById("tabContent"),
       cellTitle: document.getElementById("cellTitle"),
@@ -1756,6 +1842,7 @@
       assistantBtn: document.getElementById("assistantBtn"),
       chatbot: document.getElementById("chatbot"),
       assistantText: document.getElementById("assistantText"),
+      factBox: document.getElementById("factBox"),
       factBtn: document.getElementById("factBtn"),
       factText: document.getElementById("factText"),
       factLabel: document.getElementById("factLabel"),
@@ -1803,6 +1890,21 @@
       });
     }
 
+    function setupSearchControls() {
+      if (!els.searchWrap || !els.cellSelect || els.searchWrap.parentElement?.classList.contains("search-controls")) return;
+      const wrap = document.createElement("div");
+      wrap.className = "search-controls";
+      els.searchWrap.before(wrap);
+      wrap.appendChild(els.searchWrap);
+      wrap.appendChild(els.cellSelect);
+    }
+
+    function renderCellSelect() {
+      if (!els.cellSelect) return;
+      els.cellSelect.innerHTML = cells.map(cell => `<option value="${cell.name}">${cell.name}</option>`).join("");
+      els.cellSelect.value = activeCell.name;
+    }
+
     function filteredCells() {
       const q = els.searchInput.value.trim().toLowerCase();
       return cells.filter(cell => {
@@ -1827,6 +1929,9 @@
     function renderCells() {
       const list = filteredCells();
       els.cellCount.textContent = `${list.length} cells`;
+      if (els.cellSelect && els.cellSelect.value !== activeCell.name) {
+        els.cellSelect.value = activeCell.name;
+      }
       els.cellList.innerHTML = "";
       list.forEach(cell => {
         const card = document.createElement("div");
@@ -2102,6 +2207,16 @@
 
     function bindControls() {
       els.searchInput.addEventListener("input", renderCells);
+      els.cellSelect.onchange = () => {
+        const next = cells.find(cell => cell.name === els.cellSelect.value);
+        if (!next) return;
+        activeCell = next;
+        activeCategory = next.category;
+        renderFilters();
+        updateAnalysis();
+        renderCells();
+        showToast("Cell Selected", `${next.name} loaded from dropdown.`);
+      };
       els.themeToggle.onclick = () => {
         document.body.classList.toggle("light");
         showToast("Theme Shift", document.body.classList.contains("light") ? "Light futurism enabled." : "Deep-space mode enabled.");
@@ -2112,7 +2227,11 @@
         showToast("Audio Cues", soundOn ? "Status sounds simulated." : "Audio cues muted.");
       };
       els.assistantBtn.onclick = () => els.chatbot.classList.toggle("open");
-      els.factBtn.onclick = () => { randomFact(); showToast("Lab Fact", "Fresh chemistry insight generated."); };
+      els.factBtn.onclick = () => {
+        randomFact();
+        els.factBox.classList.toggle("show");
+        showToast("Lab Fact", "Fresh chemistry insight generated.");
+      };
       els.notifyBtn.onclick = () => showToast("Notifications", "3 simulated alerts: membrane scan, ATP drift, export queue.");
       els.exportBtn.onclick = () => {
         download(`${activeCell.name.toLowerCase().replace(/\s+/g, "_")}_dossier.json`, JSON.stringify(activeCell, null, 2), "application/json");
@@ -2181,6 +2300,8 @@
     }
 
     function init() {
+      setupSearchControls();
+      renderCellSelect();
       renderFilters();
       renderCells();
       updateAnalysis();
