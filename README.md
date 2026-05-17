@@ -1,17 +1,17 @@
-Chemistry-Inspired Web App
+Chemistry-Inspired Web Application
 
-A futuristic chemistry-themed web application featuring interactive scientific visuals, animated molecular structures, modern UI effects, and responsive design. This project combines creativity and technology to deliver an immersive digital chemistry experience.
+Overview:
+Chemistry-Inspired is a futuristic and interactive web application designed to present chemistry concepts through modern web technologies, immersive animations, and visually engaging scientific interfaces. The project combines advanced UI design with creative molecular visualization to deliver a unique digital chemistry experience.
 
-Features
-Interactive chemistry-inspired interface
-3D molecular and atomic visualizations
-Modern futuristic UI design
-Responsive layout for all devices
-Animated scientific effects
-Smooth user interactions
-Educational and creative presentation
+Features:
+Futuristic and responsive user interface
+Interactive chemistry-themed design
+Animated molecular and atomic visualizations
+Smooth transitions and modern UI effects
+Optimized performance across devices
+Educational and visually engaging experience
 
-Technologies Used
+Technologies Used:
 HTML5
 CSS3
 JavaScript
